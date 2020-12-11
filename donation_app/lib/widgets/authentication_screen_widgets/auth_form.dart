@@ -14,12 +14,17 @@ class AuthForm extends StatefulWidget {
 }
 
 class _AuthFormState extends State<AuthForm> {
-  bool hidePassword, hideConfirmPassword, loginMode, resetPass, loading;
+  bool hidePassword,
+      hideConfirmPassword,
+      loginMode,
+      resetPass,
+      loading,
+      googleloading;
   double height;
   GlobalKey fieldkey;
   String email, password, confirm, phoneNumber;
   GlobalKey<FormState> form;
-  FocusNode passwordNode, confirmNode;
+  FocusNode passwordNode, confirmNode, phoneNode;
   GoogleSignIn googleLogIn;
 
   @override
@@ -27,11 +32,13 @@ class _AuthFormState extends State<AuthForm> {
     super.initState();
     hidePassword = hideConfirmPassword = loginMode = true;
     loading = false;
+    googleloading = false;
     height = 0;
     fieldkey = GlobalKey();
     form = GlobalKey<FormState>();
     passwordNode = FocusNode();
     confirmNode = FocusNode();
+    phoneNode = FocusNode();
     googleLogIn = GoogleSignIn();
   }
 
@@ -92,6 +99,7 @@ class _AuthFormState extends State<AuthForm> {
         setState(() {
           loading = false;
         });
+        print(e.message);
         switch (e.code) {
           case "email-already-in-use":
             showError('This email is already in use');
@@ -113,14 +121,16 @@ class _AuthFormState extends State<AuthForm> {
 
   void googleSignIn() async {
     final GoogleSignInAccount googleUser = await GoogleSignIn().signIn();
-    final GoogleSignInAuthentication googleAuth =
-        await googleUser.authentication;
-    final GoogleAuthCredential credential = GoogleAuthProvider.credential(
-      accessToken: googleAuth.accessToken,
-      idToken: googleAuth.idToken,
-    );
-    await FirebaseAuth.instance.signInWithCredential(credential);
-    Navigator.of(context).pushReplacementNamed(HomeScreen.routeName);
+    if (googleUser != null) {
+      final GoogleSignInAuthentication googleAuth =
+          await googleUser.authentication;
+      final GoogleAuthCredential credential = GoogleAuthProvider.credential(
+        accessToken: googleAuth.accessToken,
+        idToken: googleAuth.idToken,
+      );
+      await FirebaseAuth.instance.signInWithCredential(credential);
+      Navigator.of(context).pushReplacementNamed(HomeScreen.routeName);
+    }
   }
 
   Widget build(BuildContext context) {
@@ -133,7 +143,6 @@ class _AuthFormState extends State<AuthForm> {
             padding: EdgeInsets.symmetric(horizontal: 30),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              // mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 (loginMode)
                     ? AuthTitle(UniqueKey(), "Log In")
@@ -253,6 +262,10 @@ class _AuthFormState extends State<AuthForm> {
                                 return "Incorrect password";
                             },
                             focusNode: confirmNode,
+                            textInputAction: TextInputAction.next,
+                            onFieldSubmitted: (value) {
+                              phoneNode.requestFocus();
+                            },
                             obscureText: hideConfirmPassword,
                             decoration: InputDecoration(
                               hintText: '•••••••••',
@@ -305,6 +318,8 @@ class _AuthFormState extends State<AuthForm> {
                               }
                               return null;
                             },
+                            focusNode: phoneNode,
+                            textInputAction: TextInputAction.done,
                             decoration: InputDecoration(
                               labelText: "Phone number",
                               labelStyle: TextStyle(
@@ -350,35 +365,37 @@ class _AuthFormState extends State<AuthForm> {
                       ? Center(
                           child: CircularProgressIndicator(),
                         )
-                      : RaisedButton(
-                          shape: StadiumBorder(),
-                          child: AnimatedSwitcher(
-                            duration: Duration(milliseconds: 400),
-                            child: (loginMode)
-                                ? Text(
-                                    'Login',
-                                    key: UniqueKey(),
-                                    style: TextStyle(
-                                      color: Theme.of(context).accentColor,
-                                      fontWeight: FontWeight.w500,
-                                      fontSize: 16,
-                                    ),
-                                  )
-                                : Text(
-                                    'Register',
-                                    key: UniqueKey(),
-                                    style: TextStyle(
-                                      color: Theme.of(context).accentColor,
-                                      fontWeight: FontWeight.w500,
-                                      fontSize: 16,
-                                    ),
-                                  ),
-                          ),
-                          color: Theme.of(context).primaryColor,
-                          onPressed: () {
-                            (loginMode) ? validateLogin() : validateSignup();
-                          },
-                        ),
+                      : (loginMode)
+                          ? RaisedButton(
+                              shape: StadiumBorder(),
+                              child: Text(
+                                'Login',
+                                style: TextStyle(
+                                  color: Theme.of(context).accentColor,
+                                  fontWeight: FontWeight.w500,
+                                  fontSize: 16,
+                                ),
+                              ),
+                              color: Theme.of(context).primaryColor,
+                              onPressed: () {
+                                validateLogin();
+                              },
+                            )
+                          : RaisedButton(
+                              shape: StadiumBorder(),
+                              child: Text(
+                                'Register',
+                                style: TextStyle(
+                                  color: Theme.of(context).accentColor,
+                                  fontWeight: FontWeight.w500,
+                                  fontSize: 16,
+                                ),
+                              ),
+                              color: Theme.of(context).primaryColor,
+                              onPressed: () {
+                                validateSignup();
+                              },
+                            ),
                 ),
                 Container(
                   width: MediaQuery.of(context).size.width,
@@ -413,7 +430,7 @@ class _AuthFormState extends State<AuthForm> {
                           ),
                           color: Theme.of(context).primaryColor,
                           onPressed: () {
-                            (loginMode) ? googleSignIn() : googleSignIn();
+                            googleSignIn();
                           },
                         ),
                 ),
@@ -431,7 +448,7 @@ class _AuthFormState extends State<AuthForm> {
                                 final box = ctx.findRenderObject() as RenderBox;
                                 setState(() {
                                   loginMode = false;
-                                  height = box.size.height;
+                                  height = box.size.height + 1;
                                 });
                               },
                               child: Text(

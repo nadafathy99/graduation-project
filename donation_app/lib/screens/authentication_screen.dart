@@ -25,7 +25,8 @@ class _AuthenticationScreenState extends State<AuthenticationScreen> {
 
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
+      body: SingleChildScrollView(
+      child: Container(
         height: MediaQuery.of(context).size.height,
         width: MediaQuery.of(context).size.width,
         child: Stack(
@@ -43,6 +44,7 @@ class _AuthenticationScreenState extends State<AuthenticationScreen> {
             ),
           ],
         ),
+      ),
       ),
     );
   }

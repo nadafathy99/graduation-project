@@ -33,10 +33,10 @@ class _AuthResetState extends State<AuthReset> {
 
   void resetPassword() async {
     if (form.currentState.validate()) {
+      setState(() {
+        loading = true;
+      });
       try {
-        setState(() {
-          loading = true;
-        });
         await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
         Scaffold.of(context).showSnackBar(
           SnackBar(
@@ -47,14 +47,13 @@ class _AuthResetState extends State<AuthReset> {
             backgroundColor: Theme.of(context).primaryColor,
           ),
         );
-      } catch (e) {
+      } on FirebaseAuthException {
         showError("Resend your email");
-
-        setState(() {
-          loading = false;
-        });
       }
-      loading = false;
+
+      setState(() {
+        loading = false;
+      });
     }
   }
 
@@ -117,16 +116,13 @@ class _AuthResetState extends State<AuthReset> {
                           onPressed: () {
                             resetPassword();
                           },
-                          child: AnimatedSwitcher(
-                            duration: Duration(milliseconds: 400),
-                            child: Text(
-                              'Reset',
-                              key: UniqueKey(),
-                              style: TextStyle(
-                                color: Theme.of(context).accentColor,
-                                fontWeight: FontWeight.w500,
-                                fontSize: 16,
-                              ),
+                          child: Text(
+                            'Reset',
+                            key: UniqueKey(),
+                            style: TextStyle(
+                              color: Theme.of(context).accentColor,
+                              fontWeight: FontWeight.w500,
+                              fontSize: 16,
                             ),
                           ),
                         ),
