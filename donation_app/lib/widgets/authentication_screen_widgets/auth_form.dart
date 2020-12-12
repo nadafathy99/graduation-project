@@ -3,6 +3,7 @@ import 'package:donation_app/screens/home_screen.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'auth_title.dart';
 
@@ -64,6 +65,8 @@ class _AuthFormState extends State<AuthForm> {
         setState(() {
           loading = false;
         });
+        print(e.message);
+        print(email);
         switch (e.code) {
           case "invalid-email":
             showError('Invalid email or password');
@@ -120,6 +123,9 @@ class _AuthFormState extends State<AuthForm> {
   }
 
   void googleSignIn() async {
+    setState(() {
+      googleloading = true;
+    });
     final GoogleSignInAccount googleUser = await GoogleSignIn().signIn();
     if (googleUser != null) {
       final GoogleSignInAuthentication googleAuth =
@@ -129,8 +135,15 @@ class _AuthFormState extends State<AuthForm> {
         idToken: googleAuth.idToken,
       );
       await FirebaseAuth.instance.signInWithCredential(credential);
+      setState(() {
+        googleloading = false;
+      });
       Navigator.of(context).pushReplacementNamed(HomeScreen.routeName);
     }
+    setState(() {
+      googleloading = false;
+    });
+    print(googleUser);
   }
 
   Widget build(BuildContext context) {
@@ -309,6 +322,7 @@ class _AuthFormState extends State<AuthForm> {
                               setState(() {
                                 phoneNumber = value;
                               });
+                              if (loginMode) return null;
                               if (value.length == 0) {
                                 return 'Phone number is required';
                               }
@@ -365,52 +379,13 @@ class _AuthFormState extends State<AuthForm> {
                       ? Center(
                           child: CircularProgressIndicator(),
                         )
-                      : (loginMode)
-                          ? RaisedButton(
-                              shape: StadiumBorder(),
-                              child: Text(
-                                'Login',
-                                style: TextStyle(
-                                  color: Theme.of(context).accentColor,
-                                  fontWeight: FontWeight.w500,
-                                  fontSize: 16,
-                                ),
-                              ),
-                              color: Theme.of(context).primaryColor,
-                              onPressed: () {
-                                validateLogin();
-                              },
-                            )
-                          : RaisedButton(
-                              shape: StadiumBorder(),
-                              child: Text(
-                                'Register',
-                                style: TextStyle(
-                                  color: Theme.of(context).accentColor,
-                                  fontWeight: FontWeight.w500,
-                                  fontSize: 16,
-                                ),
-                              ),
-                              color: Theme.of(context).primaryColor,
-                              onPressed: () {
-                                validateSignup();
-                              },
-                            ),
-                ),
-                Container(
-                  width: MediaQuery.of(context).size.width,
-                  height: 40,
-                  child: (loading)
-                      ? Center(
-                          child: CircularProgressIndicator(),
-                        )
                       : RaisedButton(
                           shape: StadiumBorder(),
                           child: AnimatedSwitcher(
                             duration: Duration(milliseconds: 400),
                             child: (loginMode)
                                 ? Text(
-                                    'Login with google',
+                                    'Login',
                                     key: UniqueKey(),
                                     style: TextStyle(
                                       color: Theme.of(context).accentColor,
@@ -419,7 +394,7 @@ class _AuthFormState extends State<AuthForm> {
                                     ),
                                   )
                                 : Text(
-                                    'Register with google',
+                                    'Register',
                                     key: UniqueKey(),
                                     style: TextStyle(
                                       color: Theme.of(context).accentColor,
@@ -430,8 +405,54 @@ class _AuthFormState extends State<AuthForm> {
                           ),
                           color: Theme.of(context).primaryColor,
                           onPressed: () {
-                            googleSignIn();
+                            (loginMode) ? validateLogin() : validateSignup();
                           },
+                        ),
+                ),
+                Container(
+                  width: MediaQuery.of(context).size.width,
+                  height: 40,
+                  child: (googleloading)
+                      ? Center(
+                          child: CircularProgressIndicator(),
+                        )
+                      : DecoratedBox(
+                          decoration: ShapeDecoration(
+                            shape: StadiumBorder(),
+                            color: Color.fromRGBO(207, 67, 50, 1),
+                          ),
+                          child: OutlineButton.icon(
+                            shape: StadiumBorder(),
+                            label: AnimatedSwitcher(
+                              duration: Duration(milliseconds: 400),
+                              child: (loginMode)
+                                  ? Text(
+                                      'Login with google',
+                                      key: UniqueKey(),
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.w500,
+                                        fontSize: 16,
+                                      ),
+                                    )
+                                  : Text(
+                                      'Register with google',
+                                      key: UniqueKey(),
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.w500,
+                                        fontSize: 16,
+                                      ),
+                                    ),
+                            ),
+                            textColor: Theme.of(context).accentColor,
+                            icon: FaIcon(
+                              FontAwesomeIcons.google,
+                              color: Colors.white,
+                              size: 21,
+                            ),
+                            onPressed: () {
+                              googleSignIn();
+                            },
+                          ),
                         ),
                 ),
                 AnimatedSwitcher(
