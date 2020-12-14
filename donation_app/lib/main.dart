@@ -41,6 +41,8 @@ class MyApp extends StatelessWidget {
       routes: {
         Homescreen.routeName: (context) => Homescreen(),
         AuthenticationScreen.routeName: (context) => AuthenticationScreen(),
+        Bottomnavbar.routeName: (context) => Bottomnavbar(),
+
       },
     );
   }
