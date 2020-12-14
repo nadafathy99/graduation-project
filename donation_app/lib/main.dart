@@ -1,6 +1,8 @@
 import 'package:donation_app/screens/authentication_screen.dart';
 import 'package:donation_app/screens/home_screen.dart';
+
 import 'package:donation_app/screens/splash_screen.dart';
+import 'package:donation_app/widgets/Buttom_bar.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -14,6 +16,7 @@ class MyApp extends StatelessWidget {
   final Future<FirebaseApp> _initialization = Firebase.initializeApp();
   @override
   Widget build(BuildContext context) {
+    
     return MaterialApp(
       title: 'The help',
       theme: ThemeData(
@@ -29,14 +32,14 @@ class MyApp extends StatelessWidget {
               return SplashScreen();
             } else {
               if (FirebaseAuth.instance.currentUser != null) {
-                return HomeScreen();
+                return Bottomnavbar();
               } else {
                 return AuthenticationScreen();
               }
             }
           }),
       routes: {
-        HomeScreen.routeName: (context) => HomeScreen(),
+        Homescreen.routeName: (context) => Homescreen(),
         AuthenticationScreen.routeName: (context) => AuthenticationScreen(),
       },
     );

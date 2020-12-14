@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:donation_app/screens/home_screen.dart';
+import 'package:donation_app/widgets/Buttom_bar.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -60,7 +61,7 @@ class _AuthFormState extends State<AuthForm> {
         });
         await FirebaseAuth.instance
             .signInWithEmailAndPassword(email: email, password: password);
-        Navigator.of(context).pushReplacementNamed(HomeScreen.routeName);
+        Navigator.of(context).pushReplacementNamed(Bottomnavbar.routeName);
       } on FirebaseAuthException catch (e) {
         setState(() {
           loading = false;
@@ -97,7 +98,7 @@ class _AuthFormState extends State<AuthForm> {
         });
         await FirebaseAuth.instance
             .createUserWithEmailAndPassword(email: email, password: password);
-        Navigator.of(context).pushReplacementNamed(HomeScreen.routeName);
+        Navigator.of(context).pushReplacementNamed(Bottomnavbar.routeName);
       } on FirebaseAuthException catch (e) {
         setState(() {
           loading = false;
@@ -138,7 +139,7 @@ class _AuthFormState extends State<AuthForm> {
       setState(() {
         googleloading = false;
       });
-      Navigator.of(context).pushReplacementNamed(HomeScreen.routeName);
+      Navigator.of(context).pushReplacementNamed(Homescreen.routeName);
     }
     setState(() {
       googleloading = false;
