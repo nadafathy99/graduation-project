@@ -1,6 +1,7 @@
+import 'package:donation_app/providers/user_provider.dart';
 import 'package:email_validator/email_validator.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'auth_title.dart';
 
 class AuthReset extends StatefulWidget {
@@ -36,8 +37,10 @@ class _AuthResetState extends State<AuthReset> {
       setState(() {
         loading = true;
       });
-      try {
-        await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
+      String error = await Provider.of<UserProvider>(context, listen: false)
+          .resetPassword(email);
+
+      if (error == null) {
         Scaffold.of(context).showSnackBar(
           SnackBar(
             content: Text(
@@ -47,7 +50,7 @@ class _AuthResetState extends State<AuthReset> {
             backgroundColor: Theme.of(context).primaryColor,
           ),
         );
-      } on FirebaseAuthException {
+      } else {
         showError("Resend your email");
       }
 

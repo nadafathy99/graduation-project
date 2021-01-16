@@ -1,44 +1,21 @@
-import 'package:donation_app/screens/authentication_screen.dart';
+import 'package:donation_app/widgets/app_drawer.dart';
 import 'package:donation_app/widgets/campaign_slider.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
-
-class Homescreen extends StatefulWidget {
+class HomeScreen extends StatefulWidget {
   static const routeName = "/Home";
   @override
-  _Homescreen createState() => _Homescreen();
+  _HomeScreen createState() => _HomeScreen();
 }
 
-class _Homescreen extends State<Homescreen> {
-
-  
+class _HomeScreen extends State<HomeScreen> {
   int money = 180;
   final int totalmoney = 220;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      drawer: Drawer(
-        child:
-          Container(
-            child: RaisedButton(
-        onPressed: () {
-            FirebaseAuth.instance.signOut();
-            Navigator.of(context)
-                .pushReplacementNamed(AuthenticationScreen.routeName);
-        },
-        child: Text(
-            "logout",
-            style: TextStyle(
-              color: Theme.of(context).accentColor,
-            ),
-        ) ,
-      ),
-          ),
-        ),
-      
-    
+      drawer: AppDrawer(),
       backgroundColor: Colors.white,
       appBar: AppBar(
         centerTitle: true,
@@ -57,7 +34,6 @@ class _Homescreen extends State<Homescreen> {
                   end: Alignment.bottomRight,
                   colors: <Color>[Colors.teal, Colors.blue])),
         ),
-       
         actions: [
           IconButton(
             icon: Icon(
@@ -130,7 +106,7 @@ class _Homescreen extends State<Homescreen> {
                         });
                       }),
                   Container(
-                    margin: EdgeInsets.only(bottom: 60,right: 30),
+                    margin: EdgeInsets.only(bottom: 60, right: 30),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [

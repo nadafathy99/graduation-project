@@ -10,26 +10,27 @@ class Campaignslider extends StatelessWidget {
       child: PageIndicatorContainer(
         length: 4,
         indicatorColor: Colors.white,
+        indicatorSelectorColor: Colors.blue,
         // padding: EdgeInsets.all(1),
 
         shape: IndicatorShape.circle(size: 8),
-        child: PageView.builder(itemBuilder: (context, index) {
-          return Stack(
-            children: [
-              Container(
-                width: MediaQuery.of(context).size.width,
-                height: MediaQuery.of(context).size.height * 0.5,
-                margin: EdgeInsets.symmetric(horizontal: 20),
-                child: Image.asset(
-                  'assets/images/8ESFH.jpeg',
-                  fit: BoxFit.cover,
-                ),
-              ),
-              
-              
-            ],
-          );
-        }),
+        child: PageView.builder(
+            itemCount: 4,
+            itemBuilder: (context, index) {
+              return Stack(
+                children: [
+                  Container(
+                    width: MediaQuery.of(context).size.width,
+                    height: MediaQuery.of(context).size.height * 0.5,
+                    margin: EdgeInsets.symmetric(horizontal: 20),
+                    child: Image.asset(
+                      'assets/images/8ESFH.jpeg',
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                ],
+              );
+            }),
       ),
     );
   }

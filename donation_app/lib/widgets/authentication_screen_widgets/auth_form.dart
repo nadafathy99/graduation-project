@@ -1,10 +1,11 @@
-import 'dart:io';
+import 'package:donation_app/providers/user_provider.dart';
 import 'package:donation_app/widgets/Buttom_bar.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:provider/provider.dart';
 import 'auth_title.dart';
 
 class AuthForm extends StatefulWidget {
@@ -54,75 +55,43 @@ class _AuthFormState extends State<AuthForm> {
 
   void validateLogin() async {
     if (form.currentState.validate()) {
-      try {
-        setState(() {
-          loading = true;
-        });
-        await FirebaseAuth.instance
-            .signInWithEmailAndPassword(email: email, password: password);
+      setState(() {
+        loading = true;
+      });
+
+      String error = await Provider.of<UserProvider>(context, listen: false)
+          .signin(email, password);
+      if (error == null) {
         Navigator.of(context).pushReplacementNamed(Bottomnavbar.routeName);
-      } on FirebaseAuthException catch (e) {
+      } else {
         setState(() {
           loading = false;
         });
-        print(e.message);
-        print(email);
-        switch (e.code) {
-          case "invalid-email":
-            showError('Invalid email or password');
-            break;
-          case "user-disabled":
-            showError('This user has been disabled');
-            break;
-          case "wrong-password":
-            showError('Invalid email or password');
-            break;
-          default:
-            showError('User not found');
-        }
-      } on SocketException {
-        setState(() {
-          loading = false;
-        });
-        showError('Internet is unstable');
+        showError(error);
       }
     }
   }
 
   void validateSignup() async {
     if (form.currentState.validate()) {
-      try {
-        setState(() {
-          loading = true;
-        });
-        await FirebaseAuth.instance
-            .createUserWithEmailAndPassword(email: email, password: password);
+      setState(() {
+        loading = true;
+      });
+
+      String error = await Provider.of<UserProvider>(context, listen: false)
+          .signup(email, password);
+      if (error == null) {
         Navigator.of(context).pushReplacementNamed(Bottomnavbar.routeName);
-      } on FirebaseAuthException catch (e) {
+      } else {
         setState(() {
           loading = false;
         });
-        print(e.message);
-        switch (e.code) {
-          case "email-already-in-use":
-            showError('This email is already in use');
-            break;
-          case "invalid-email":
-            showError('Invalid email');
-            break;
-          default:
-            showError('Weak Password');
-        }
-      } on SocketException {
-        setState(() {
-          loading = false;
-        });
-        showError('Internet is unstable');
+        showError(error);
       }
     }
   }
 
-  void googleSignIn() async {
+  Future<void> googleSignIn() async {
     setState(() {
       googleloading = true;
     });
@@ -334,6 +303,7 @@ class _AuthFormState extends State<AuthForm> {
                             },
                             focusNode: phoneNode,
                             textInputAction: TextInputAction.done,
+                            keyboardType: TextInputType.phone,
                             decoration: InputDecoration(
                               labelText: "Phone number",
                               labelStyle: TextStyle(
@@ -423,25 +393,12 @@ class _AuthFormState extends State<AuthForm> {
                           ),
                           child: OutlineButton.icon(
                             shape: StadiumBorder(),
-                            label: AnimatedSwitcher(
-                              duration: Duration(milliseconds: 400),
-                              child: (loginMode)
-                                  ? Text(
-                                      'Login with google',
-                                      key: UniqueKey(),
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.w500,
-                                        fontSize: 16,
-                                      ),
-                                    )
-                                  : Text(
-                                      'Register with google',
-                                      key: UniqueKey(),
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.w500,
-                                        fontSize: 16,
-                                      ),
-                                    ),
+                            label: Text(
+                              'Continue with google',
+                              style: TextStyle(
+                                fontWeight: FontWeight.w500,
+                                fontSize: 16,
+                              ),
                             ),
                             textColor: Theme.of(context).accentColor,
                             icon: FaIcon(
@@ -449,8 +406,8 @@ class _AuthFormState extends State<AuthForm> {
                               color: Colors.white,
                               size: 21,
                             ),
-                            onPressed: () {
-                              googleSignIn();
+                            onPressed: () async {
+                              await googleSignIn();
                             },
                           ),
                         ),

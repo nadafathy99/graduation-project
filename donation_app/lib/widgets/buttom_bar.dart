@@ -1,4 +1,3 @@
-
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:donation_app/screens/add_donation.dart';
 import 'package:donation_app/screens/add_request.dart';
@@ -14,38 +13,40 @@ class Bottomnavbar extends StatefulWidget {
 }
 
 class _BottomnavbarState extends State<Bottomnavbar> {
-  int pageindex=0;
+  int pageindex = 0;
 
-  final Donation _donation=Donation();
+  final Donation _donation = Donation();
 
-  final Lost _more=Lost();
+  final Lost _more = Lost();
 
   final Categories _categories = Categories();
 
   final Request _notification = Request();
-   final Homescreen _myHomePage = Homescreen();
+  final HomeScreen _myHomePage = HomeScreen();
 
+  Widget _showpage = HomeScreen();
 
-  Widget _showpage=Homescreen();
-
-  Widget pagechosser(int page){
-    switch(page){
+  Widget pagechosser(int page) {
+    switch (page) {
       case 0:
-      return _myHomePage ;
-      break;
+        return _myHomePage;
+        break;
       case 1:
-      return _notification;
-      break;
+        return _notification;
+        break;
       case 2:
-      return _donation;
-      break;
+        return _donation;
+        break;
       case 3:
-      return _more;
-      break;
+        return _more;
+        break;
       case 4:
-      return _categories;
-      break;
-      default:return Container(child: Text('no pages'),);
+        return _categories;
+        break;
+      default:
+        return Container(
+          child: Text('no pages'),
+        );
     }
   }
 
@@ -56,9 +57,8 @@ class _BottomnavbarState extends State<Bottomnavbar> {
         animationDuration: Duration(milliseconds: 400),
         color: Colors.blueAccent,
         height: 50,
-        backgroundColor:  Colors.white,
+        backgroundColor: Colors.white,
         index: pageindex,
-        
         items: <Widget>[
           Column(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -71,10 +71,9 @@ class _BottomnavbarState extends State<Bottomnavbar> {
               Text(
                 'Home',
                 style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 10,
-                   fontWeight: FontWeight.bold
-                ),
+                    color: Colors.white,
+                    fontSize: 10,
+                    fontWeight: FontWeight.bold),
               )
             ],
           ),
@@ -113,7 +112,6 @@ class _BottomnavbarState extends State<Bottomnavbar> {
               ),
             ],
           ),
-      
           Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -123,7 +121,7 @@ class _BottomnavbarState extends State<Bottomnavbar> {
                 color: Colors.white,
               ),
               Text(
-                'losts',
+                'Losts',
                 style: TextStyle(
                     color: Colors.white,
                     fontSize: 10,
@@ -131,8 +129,8 @@ class _BottomnavbarState extends State<Bottomnavbar> {
               )
             ],
           ),
-              Column(
-                mainAxisAlignment: MainAxisAlignment.center,
+          Column(
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Icon(
                 Icons.category,
@@ -151,10 +149,9 @@ class _BottomnavbarState extends State<Bottomnavbar> {
           ),
         ],
         onTap: (int tappedindex) {
-        setState(() {
-          _showpage =pagechosser(tappedindex);
-        });
-         
+          setState(() {
+            _showpage = pagechosser(tappedindex);
+          });
 
           //Handle button tap
         },
@@ -162,9 +159,6 @@ class _BottomnavbarState extends State<Bottomnavbar> {
       body: Center(
         child: _showpage,
       ),
-      
-      
     );
   }
 }
-
